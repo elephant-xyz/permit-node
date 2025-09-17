@@ -20,8 +20,8 @@ export ELEPHANT_RPC_URL=...
 export ELEPHANT_PINATA_JWT=...
 
 # Optional (deployment)
-export STACK_NAME=elephant-oracle-node
-export WORKFLOW_QUEUE_NAME=elephant-workflow-queue
+export STACK_NAME=elephant-permit-node
+export WORKFLOW_QUEUE_NAME=permit-workflow-queue
 export WORKFLOW_STARTER_RESERVED_CONCURRENCY=100
 export WORKFLOW_STATE_MACHINE_NAME=ElephantExpressWorkflow
 
@@ -55,8 +55,8 @@ export ELEPHANT_RPC_URL=...                                # RPC URL for blockch
 export ELEPHANT_PINATA_JWT=...                             # Pinata JWT for uploads
 
 # Optional (deployment)
-export STACK_NAME=elephant-oracle-node
-export WORKFLOW_QUEUE_NAME=elephant-workflow-queue
+export STACK_NAME=elephant-permit-node
+export WORKFLOW_QUEUE_NAME=permit-workflow-queue
 export WORKFLOW_STARTER_RESERVED_CONCURRENCY=100
 export WORKFLOW_STATE_MACHINE_NAME=ElephantExpressWorkflow
 

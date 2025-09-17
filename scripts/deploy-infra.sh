@@ -9,7 +9,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*"; }
 
 # Config with sane defaults
-STACK_NAME="${STACK_NAME:-elephant-oracle-node}"
+STACK_NAME="${STACK_NAME:-elephant-permit-node}"
 SAM_TEMPLATE="prepare/template.yaml"
 BUILT_TEMPLATE=".aws-sam/build/template.yaml"
 STARTUP_SCRIPT="infra/startup.sh"

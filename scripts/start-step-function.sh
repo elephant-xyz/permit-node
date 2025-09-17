@@ -9,7 +9,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*"; }
 
 # Config with defaults
-STACK_NAME="${STACK_NAME:-elephant-oracle-node}"
+STACK_NAME="${STACK_NAME:-elephant-permit-node}"
 
 usage() {
     cat <<EOF
@@ -26,7 +26,7 @@ Options:
     --help             Show this help message
 
 Environment Variables:
-    STACK_NAME         CloudFormation stack name (default: elephant-oracle-node)
+    STACK_NAME         CloudFormation stack name (default: elephant-permit-node)
 
 Examples:
     # Start S3 to SQS processing (default)

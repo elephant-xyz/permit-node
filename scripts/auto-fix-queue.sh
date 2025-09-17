@@ -54,7 +54,7 @@ check_prerequisites() {
     
     # Check if we're in the right directory
     if [ ! -f "dags/elephant_workflow.py" ]; then
-        print_error "Please run this script from the oracle-node project root directory"
+        print_error "Please run this script from the permit-node project root directory"
         exit 1
     fi
     

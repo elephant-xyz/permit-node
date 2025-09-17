@@ -10,7 +10,7 @@ info() { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*"; }
 
-STACK_NAME="${STACK_NAME:-elephant-oracle-node}"
+STACK_NAME="${STACK_NAME:-elephant-permit-node}"
 LOG_GROUP_NAME="${FLOW_LOG_GROUP_NAME:-/aws/vpc/flow-logs/${STACK_NAME}}"
 
 require_cmd() { command -v "$1" >/dev/null || { err "$1 not found"; exit 1; }; }

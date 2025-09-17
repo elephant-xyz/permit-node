@@ -12,7 +12,7 @@ info() { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*"; }
 
-STACK_NAME="${STACK_NAME:-elephant-oracle-node}"
+STACK_NAME="${STACK_NAME:-elephant-permit-node}"
 LOG_GROUP_NAME="${FLOW_LOG_GROUP_NAME:-/aws/vpc/flow-logs/${STACK_NAME}}"
 TRAFFIC_TYPE="${FLOW_LOGS_TRAFFIC_TYPE:-ALL}"     # ACCEPT | REJECT | ALL
 AGG_INTERVAL="${FLOW_LOGS_MAX_AGG_SEC:-60}"       # 60 or 600

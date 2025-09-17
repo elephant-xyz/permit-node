@@ -10,7 +10,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*"; }
 step() { echo -e "${BLUE}[STEP]${NC} $*"; }
 
-STACK_NAME="${STACK_NAME:-elephant-oracle-node}"
+STACK_NAME="${STACK_NAME:-elephant-permit-node}"
 DRY_RUN="${DRY_RUN:-false}"
 
 # Function to get queue URL from CloudFormation stack
@@ -217,7 +217,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --dry-run     Show what would be purged without actually purging"
-            echo "  --stack-name  CloudFormation stack name (default: elephant-oracle-node)"
+            echo "  --stack-name  CloudFormation stack name (default: elephant-permit-node)"
             echo "  --help        Show this help message"
             exit 0
             ;;
