@@ -73,6 +73,42 @@ export const handler = async (event) => {
     const csvBytes = await get.Body?.transformToByteArray();
     if (!csvBytes) throw new Error("Failed to download input CSV");
     await fs.writeFile(csvPath, Buffer.from(csvBytes));
+    
+    // Log original CSV content
+    console.log("🔍 Original CSV Content Analysis:");
+    try {
+      const csvContent = Buffer.from(csvBytes).toString('utf8');
+      const lines = csvContent.split('\n');
+      console.log(`📊 CSV Statistics:`);
+      console.log(`    Total lines: ${lines.length}`);
+      console.log(`    File size: ${csvBytes.length} bytes`);
+      console.log(`    Header: ${lines[0] || 'Empty'}`);
+      
+      // Log first few data rows
+      const dataRows = lines.slice(1, 6).filter(line => line.trim());
+      console.log(`📋 Sample Data Rows:`);
+      dataRows.forEach((row, i) => {
+        console.log(`    Row ${i + 1}: ${row}`);
+      });
+      
+      if (lines.length > 6) {
+        console.log(`    ... and ${lines.length - 6} more rows`);
+      }
+      
+      // If header contains URL-like fields, highlight them
+      const header = lines[0] || '';
+      const urlFields = header.split(',').map((field, index) => ({ field: field.trim(), index }))
+        .filter(({field}) => field.toLowerCase().includes('url') || field.toLowerCase().includes('link') || field.toLowerCase().includes('address'));
+      
+      if (urlFields.length > 0) {
+        console.log(`🔗 Detected URL/Address fields:`);
+        urlFields.forEach(({field, index}) => {
+          console.log(`    Column ${index + 1}: ${field}`);
+        });
+      }
+    } catch (error) {
+      console.log(`⚠️ Could not analyze CSV content: ${error.message}`);
+    }
     const seedInputZip = path.join(tmp, "input.zip");
     const inZip = new AdmZip();
     inZip.addLocalFile(csvPath, "", "seed.csv");

@@ -1,19 +1,19 @@
-Comment: Elephant Express workflow. Triggered by Starter Lambda with one SQS message payload.
-StartAt: Preprocess
+Comment: Permit Preparation workflow. Processes CSV files, generates permit data, splits into chunks, and publishes to SQS for parallel processing.
+StartAt: PreparePermits
 States:
-  Preprocess:
+  PreparePermits:
     Type: Task
     Resource: arn:aws:states:::lambda:invoke
     Parameters:
-      FunctionName: ${WorkflowPreProcessorFunction}
+      FunctionName: ${PreparePermitsFunction}
       Payload.$: $.message
-    # Store full Lambda invoke result under $.pre so we can shape it next
+    # Store full Lambda invoke result under $.permits so we can use it in next steps
     ResultSelector:
-      county_prep_input_s3_uri.$: $.Payload.county_prep_input_s3_uri
-      output_prefix.$: $.Payload.output_prefix
-      seed_output_s3_uri.$: $.Payload.seed_output_s3_uri
-    ResultPath: $.pre
-    Next: Prepare
+      chunk_s3_uris.$: $.Payload.chunk_s3_uris
+      portal_zip_s3_uri.$: $.Payload.portal_zip_s3_uri
+      total_chunks.$: $.Payload.total_chunks
+      sqs_messages_sent.$: $.Payload.sqs_messages_sent
+    ResultPath: $.permits
     Retry:
       - ErrorEquals:
           [
@@ -24,95 +24,4 @@ States:
         IntervalSeconds: 2
         MaxAttempts: 2
         BackoffRate: 2
-    Catch:
-      - ErrorEquals: [States.ALL]
-        ResultPath: $.error
-        Next: RequeueOnFailure
-
-  Prepare:
-    Type: Task
-    Resource: arn:aws:states:::lambda:invoke
-    Parameters:
-      FunctionName: ${DownloaderFunction}
-      Payload:
-        input_s3_uri.$: $.pre.county_prep_input_s3_uri
-        output_s3_uri_prefix.$: $.pre.output_prefix
-        browser: true
-    ResultSelector:
-      output_s3_uri.$: $.Payload.output_s3_uri
-    ResultPath: $.prepare
-    Next: Postprocess
-    Retry:
-      - ErrorEquals:
-          [
-            Lambda.ServiceException,
-            Lambda.AWSLambdaException,
-            Lambda.SdkClientException,
-          ]
-        IntervalSeconds: 5
-        MaxAttempts: 3
-        BackoffRate: 2
-    Catch:
-      - ErrorEquals: [States.ALL]
-        ResultPath: $.error
-        Next: RequeueOnFailure
-
-  Postprocess:
-    Type: Task
-    Resource: arn:aws:states:::lambda:invoke
-    Parameters:
-      FunctionName: ${WorkflowPostProcessorFunction}
-      Payload:
-        s3.$: $.message.s3
-        prepare.$: $.prepare
-        seed_output_s3_uri.$: $.pre.seed_output_s3_uri
-    ResultSelector:
-      items.$: $.Payload.transactionItems
-    ResultPath: $.post
-    Next: QueueForTheSubmit
-    Retry:
-      - ErrorEquals:
-          [
-            Lambda.ServiceException,
-            Lambda.AWSLambdaException,
-            Lambda.SdkClientException,
-          ]
-        IntervalSeconds: 5
-        MaxAttempts: 2
-        BackoffRate: 2
-    Catch:
-      - ErrorEquals: [States.ALL]
-        ResultPath: $.error
-        Next: RequeueOnFailure
-
-  QueueForTheSubmit:
-    Type: Task
-    Resource: arn:aws:states:::sqs:sendMessage
-    Parameters:
-      QueueUrl: ${TransactionsSqsQueueUrl}
-      MessageBody.$: "States.JsonToString($.post.items)"
-    ResultPath: null
-    Next: RequeueOnSuccess
-
-  RequeueOnSuccess:
-    Type: Task
-    Resource: arn:aws:states:::sqs:sendMessage
-    Parameters:
-      QueueUrl: ${WorkflowSqsQueueUrl}
-      MessageBody.$: "States.JsonToString($.message)"
-    ResultPath: null
     End: true
-
-  RequeueOnFailure:
-    Type: Task
-    Resource: arn:aws:states:::sqs:sendMessage
-    Parameters:
-      QueueUrl: ${WorkflowSqsQueueUrl}
-      MessageBody.$: "States.JsonToString($.message)"
-    ResultPath: null
-    Next: FailRuntime
-
-  FailRuntime:
-    Type: Fail
-    Error: WorkflowFailed
-    Cause: A task failed. See error field.

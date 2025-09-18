@@ -1,0 +1,26 @@
+Comment: Permit Pages Express workflow. Triggered by SQS with individual CSV chunk payload.
+StartAt: PreparePermitPages
+States:
+  PreparePermitPages:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    Parameters:
+      FunctionName: ${PreparePermitPagesFunction}
+      Payload.$: $
+    # Store the result for potential future use
+    ResultSelector:
+      output_s3_uri.$: $.Payload.output_s3_uri
+      input_csv_s3_uri.$: $.Payload.input_csv_s3_uri
+      processing_time_ms.$: $.Payload.processing_time_ms
+    ResultPath: $.result
+    Retry:
+      - ErrorEquals:
+          [
+            Lambda.ServiceException,
+            Lambda.AWSLambdaException,
+            Lambda.SdkClientException,
+          ]
+        IntervalSeconds: 2
+        MaxAttempts: 3
+        BackoffRate: 2
+    End: true
