@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elephant-xyz/cli": "^1.35.1",
+    "@elephant-xyz/cli": "git+https://github.com/elephant-xyz/elephant-cli.git#permits",
     "@aws-sdk/client-s3": "^3.0.0",
     "csv-parse": "^6.1.0",
     "csv-writer": "^1.6.0"

@@ -73,6 +73,45 @@ export const handler = async (event) => {
     console.log(`✅ S3 download completed: ${s3DownloadDuration}ms (${(s3DownloadDuration/1000).toFixed(2)}s)`);
     console.log(`📊 Downloaded ${inputBytes.length} bytes from s3://${bucket}/${key}`);
 
+    // Extract and log ZIP content before prepare
+    console.log("🔍 Examining input ZIP content...");
+    try {
+      const AdmZip = await import('adm-zip');
+      const zip = new AdmZip.default(inputZip);
+      const zipEntries = zip.getEntries();
+      
+      console.log(`📦 ZIP contains ${zipEntries.length} files:`);
+      
+      zipEntries.forEach((entry, index) => {
+        console.log(`  ${index + 1}. ${entry.entryName} (${entry.header.size} bytes)`);
+        
+        // If it's a CSV file, log its content
+        if (entry.entryName.toLowerCase().endsWith('.csv')) {
+          try {
+            const csvContent = entry.getData().toString('utf8');
+            const lines = csvContent.split('\n');
+            console.log(`📋 CSV Content Preview (${entry.entryName}):`);
+            console.log(`    Total lines: ${lines.length}`);
+            console.log(`    Header: ${lines[0] || 'Empty'}`);
+            
+            // Log first few data rows
+            const dataRows = lines.slice(1, 6).filter(line => line.trim());
+            dataRows.forEach((row, i) => {
+              console.log(`    Row ${i + 1}: ${row}`);
+            });
+            
+            if (lines.length > 6) {
+              console.log(`    ... and ${lines.length - 6} more rows`);
+            }
+          } catch (csvError) {
+            console.log(`    ⚠️ Could not read CSV content: ${csvError.message}`);
+          }
+        }
+      });
+    } catch (zipError) {
+      console.log(`⚠️ Could not examine ZIP content: ${zipError.message}`);
+    }
+
     const outputZip = path.join(tempDir, "output.zip");
     const useBrowser = event.browser ?? true;
     

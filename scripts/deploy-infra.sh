@@ -113,41 +113,49 @@ compute_param_overrides() {
     fi
 
     local parts=()
-    parts+=("ElephantRpcUrl=\"$ELEPHANT_RPC_URL\"")
-    parts+=("ElephantPinataJwt=\"$ELEPHANT_PINATA_JWT\"")
-    parts+=("ElephantKeystoreS3Key=\"${ELEPHANT_KEYSTORE_S3_KEY:-pending}\"")
-    parts+=("ElephantKeystorePassword=\"$ELEPHANT_KEYSTORE_PASSWORD\"")
+    # These parameters are no longer in the CloudFormation template
+    # parts+=("ElephantRpcUrl=\"$ELEPHANT_RPC_URL\"")
+    # parts+=("ElephantPinataJwt=\"$ELEPHANT_PINATA_JWT\"")
+    # parts+=("ElephantKeystoreS3Key=\"${ELEPHANT_KEYSTORE_S3_KEY:-pending}\"")
+    # parts+=("ElephantKeystorePassword=\"$ELEPHANT_KEYSTORE_PASSWORD\"")
   else
-    # Traditional mode - require all API credentials
-    : "${ELEPHANT_DOMAIN?Set ELEPHANT_DOMAIN}"
-    : "${ELEPHANT_API_KEY?Set ELEPHANT_API_KEY}"
-    : "${ELEPHANT_ORACLE_KEY_ID?Set ELEPHANT_ORACLE_KEY_ID}"
-    : "${ELEPHANT_FROM_ADDRESS?Set ELEPHANT_FROM_ADDRESS}"
-    : "${ELEPHANT_RPC_URL?Set ELEPHANT_RPC_URL}"
-    : "${ELEPHANT_PINATA_JWT?Set ELEPHANT_PINATA_JWT}"
+    # Traditional mode - NO LONGER NEEDED (parameters removed from template)
+    # : "${ELEPHANT_DOMAIN?Set ELEPHANT_DOMAIN}"
+    # : "${ELEPHANT_API_KEY?Set ELEPHANT_API_KEY}"
+    # : "${ELEPHANT_ORACLE_KEY_ID?Set ELEPHANT_ORACLE_KEY_ID}"
+    # : "${ELEPHANT_FROM_ADDRESS?Set ELEPHANT_FROM_ADDRESS}"
+    # : "${ELEPHANT_RPC_URL?Set ELEPHANT_RPC_URL}"
+    # : "${ELEPHANT_PINATA_JWT?Set ELEPHANT_PINATA_JWT}"
 
     local parts=()
-    parts+=("ElephantDomain=\"$ELEPHANT_DOMAIN\"")
-    parts+=("ElephantApiKey=\"$ELEPHANT_API_KEY\"")
-    parts+=("ElephantOracleKeyId=\"$ELEPHANT_ORACLE_KEY_ID\"")
-    parts+=("ElephantFromAddress=\"$ELEPHANT_FROM_ADDRESS\"")
-    parts+=("ElephantRpcUrl=\"$ELEPHANT_RPC_URL\"")
-    parts+=("ElephantPinataJwt=\"$ELEPHANT_PINATA_JWT\"")
+    # These parameters are no longer in the CloudFormation template
+    # parts+=("ElephantDomain=\"$ELEPHANT_DOMAIN\"")
+    # parts+=("ElephantApiKey=\"$ELEPHANT_API_KEY\"")
+    # parts+=("ElephantOracleKeyId=\"$ELEPHANT_ORACLE_KEY_ID\"")
+    # parts+=("ElephantFromAddress=\"$ELEPHANT_FROM_ADDRESS\"")
+    # parts+=("ElephantRpcUrl=\"$ELEPHANT_RPC_URL\"")
+    # parts+=("ElephantPinataJwt=\"$ELEPHANT_PINATA_JWT\"")
   fi
 
   [[ -n "${WORKFLOW_QUEUE_NAME:-}" ]] && parts+=("WorkflowQueueName=\"$WORKFLOW_QUEUE_NAME\"")
   [[ -n "${WORKFLOW_STARTER_RESERVED_CONCURRENCY:-}" ]] && parts+=("WorkflowStarterReservedConcurrency=\"$WORKFLOW_STARTER_RESERVED_CONCURRENCY\"")
   [[ -n "${WORKFLOW_STATE_MACHINE_NAME:-}" ]] && parts+=("WorkflowStateMachineName=\"$WORKFLOW_STATE_MACHINE_NAME\"")
+  [[ -n "${CSV_CHUNK_SIZE:-}" ]] && parts+=("CsvChunkSize=\"$CSV_CHUNK_SIZE\"")
 
-  # Prepare function flags (only add if set locally)
-  [[ -n "${ELEPHANT_PREPARE_USE_BROWSER:-}" ]] && parts+=("ElephantPrepareUseBrowser=\"$ELEPHANT_PREPARE_USE_BROWSER\"")
-  [[ -n "${ELEPHANT_PREPARE_NO_FAST:-}" ]] && parts+=("ElephantPrepareNoFast=\"$ELEPHANT_PREPARE_NO_FAST\"")
-  [[ -n "${ELEPHANT_PREPARE_NO_CONTINUE:-}" ]] && parts+=("ElephantPrepareNoContinue=\"$ELEPHANT_PREPARE_NO_CONTINUE\"")
+  # Prepare function flags (only add if set locally) - NO LONGER NEEDED
+  # [[ -n "${ELEPHANT_PREPARE_USE_BROWSER:-}" ]] && parts+=("ElephantPrepareUseBrowser=\"$ELEPHANT_PREPARE_USE_BROWSER\"")
+  # [[ -n "${ELEPHANT_PREPARE_NO_FAST:-}" ]] && parts+=("ElephantPrepareNoFast=\"$ELEPHANT_PREPARE_NO_FAST\"")
+  # [[ -n "${ELEPHANT_PREPARE_NO_CONTINUE:-}" ]] && parts+=("ElephantPrepareNoContinue=\"$ELEPHANT_PREPARE_NO_CONTINUE\"")
   
-  # Updater schedule rate (only add if set locally)
-  [[ -n "${UPDATER_SCHEDULE_RATE:-}" ]] && parts+=("UpdaterScheduleRate=\"$UPDATER_SCHEDULE_RATE\"")
+  # Updater schedule rate (only add if set locally) - NO LONGER NEEDED
+  # [[ -n "${UPDATER_SCHEDULE_RATE:-}" ]] && parts+=("UpdaterScheduleRate=\"$UPDATER_SCHEDULE_RATE\"")
 
-  PARAM_OVERRIDES="${parts[*]}"
+  # Handle empty parts array gracefully
+  if [[ ${#parts[@]} -eq 0 ]]; then
+    PARAM_OVERRIDES=""
+  else
+    PARAM_OVERRIDES="${parts[*]}"
+  fi
 }
 
 bundle_transforms_for_lambda() {

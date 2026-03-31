@@ -1,8 +1,8 @@
 {
-  "name": "workflow-pre-lambda",
+  "name": "prepare-permit-pages-lambda",
   "version": "1.0.0",
   "type": "module",
-  "description": "Lambda function for preprocessing workflow data",
+  "description": "Lambda function for running elephant-cli prepare-permit-pages command on CSV chunks",
   "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.879.0",
     "@elephant-xyz/cli": "git+https://github.com/elephant-xyz/elephant-cli.git#permits",
-    "adm-zip": "^0.5.10",
-    "csv-parse": "^5.6.0"
+    "adm-zip": "^0.5.10"
   }
 }
